@@ -44,16 +44,43 @@ function setState(state, message = '') {
 }
 
 // Simulate async behavior
-searchBtn.addEventListener('click', () => {
-  setState(UI_STATE.LOADING);
+const API_KEY = '3f8c9e8d8ecefc5056cb60dfd59d459c';
 
-  setTimeout(() => {
-    const random = Math.random();
+async function fetchWeather(city) {
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
-    if (random > 0.5) {
-      setState(UI_STATE.SUCCESS, '<p>25°C, Clear Sky</p>');
-    } else {
-      setState(UI_STATE.ERROR, 'City not found');
-    }
-  }, 1500);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error('City not found');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+searchBtn.addEventListener('click', async () => {
+  const city = document.getElementById('cityInput').value.trim();
+
+  if (!city) {
+    setState(UI_STATE.ERROR, 'Please enter a city name');
+    return;
+  }
+
+  try {
+    setState(UI_STATE.LOADING);
+
+    const weatherData = await fetchWeather(city);
+
+    const temperature = weatherData.main.temp;
+    const description = weatherData.weather[0].description;
+
+    setState(
+      UI_STATE.SUCCESS,
+      `<p>${temperature}°C - ${description}</p>`
+    );
+  } catch (error) {
+    setState(UI_STATE.ERROR, error.message);
+  }
 });
+

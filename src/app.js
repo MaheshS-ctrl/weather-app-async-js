@@ -1,3 +1,5 @@
+import { API_KEY } from './config.js';
+
 const statusDiv = document.getElementById('status');
 const resultDiv = document.getElementById('weatherResult');
 const searchBtn = document.getElementById('searchBtn');
@@ -44,7 +46,6 @@ function setState(state, message = '') {
 }
 
 // Simulate async behavior
-const API_KEY = '';
 
 async function fetchWeather(city) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;

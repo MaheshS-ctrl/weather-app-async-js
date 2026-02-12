@@ -1,1 +1,1 @@
-console.log("Weather App initialized");
+console.log('Weather App initialized');

@@ -44,7 +44,7 @@ function setState(state, message = '') {
 }
 
 // Simulate async behavior
-const API_KEY = '3f8c9e8d8ecefc5056cb60dfd59d459c';
+const API_KEY = '';
 
 async function fetchWeather(city) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;

@@ -1,3 +1,5 @@
+import { API_KEY } from './config.js';
+
 const statusDiv = document.getElementById('status');
 const resultDiv = document.getElementById('weatherResult');
 const searchBtn = document.getElementById('searchBtn');
@@ -43,8 +45,8 @@ function setState(state, message = '') {
   }
 }
 
+
 // Simulate async behavior
-const API_KEY = '3f8c9e8d8ecefc5056cb60dfd59d459c';
 
 async function fetchWeather(city) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
@@ -52,12 +54,18 @@ async function fetchWeather(city) {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error('City not found');
+    if (response.status === 401)
+      throw new Error('Invalid API key');
+    if (response.status === 404)
+      throw new Error('City not found');
+    throw new Error('Server error');
   }
+
 
   const data = await response.json();
   return data;
 }
+
 
 searchBtn.addEventListener('click', async () => {
   const city = document.getElementById('cityInput').value.trim();
@@ -79,8 +87,13 @@ searchBtn.addEventListener('click', async () => {
       UI_STATE.SUCCESS,
       `<p>${temperature}°C - ${description}</p>`
     );
-  } catch (error) {
-    setState(UI_STATE.ERROR, error.message);
   }
+  catch (error) {
+  if (error instanceof TypeError) {
+    setState(UI_STATE.ERROR, 'Network error');
+  }
+}
+
+
 });
 

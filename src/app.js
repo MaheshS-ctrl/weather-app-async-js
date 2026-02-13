@@ -11,11 +11,7 @@ const UI_STATE = {
   ERROR: 'error',
 };
 
-let currentState = UI_STATE.IDLE;
-
 function setState(state, message = '') {
-  currentState = state;
-
   statusDiv.className = '';
   resultDiv.innerHTML = '';
 
@@ -45,7 +41,6 @@ function setState(state, message = '') {
   }
 }
 
-
 // Simulate async behavior
 
 async function fetchWeather(city) {
@@ -54,18 +49,14 @@ async function fetchWeather(city) {
   const response = await fetch(url);
 
   if (!response.ok) {
-    if (response.status === 401)
-      throw new Error('Invalid API key');
-    if (response.status === 404)
-      throw new Error('City not found');
+    if (response.status === 401) throw new Error('Invalid API key');
+    if (response.status === 404) throw new Error('City not found');
     throw new Error('Server error');
   }
-
 
   const data = await response.json();
   return data;
 }
-
 
 searchBtn.addEventListener('click', async () => {
   const city = document.getElementById('cityInput').value.trim();
@@ -83,17 +74,10 @@ searchBtn.addEventListener('click', async () => {
     const temperature = weatherData.main.temp;
     const description = weatherData.weather[0].description;
 
-    setState(
-      UI_STATE.SUCCESS,
-      `<p>${temperature}°C - ${description}</p>`
-    );
+    setState(UI_STATE.SUCCESS, `<p>${temperature}°C - ${description}</p>`);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      setState(UI_STATE.ERROR, 'Network error');
+    }
   }
-  catch (error) {
-  if (error instanceof TypeError) {
-    setState(UI_STATE.ERROR, 'Network error');
-  }
-}
-
-
 });
-
